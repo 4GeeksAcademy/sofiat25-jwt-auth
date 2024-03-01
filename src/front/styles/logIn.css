@@ -1,0 +1,32 @@
+.logInForm {
+    height: 400px;
+  }
+  
+  .side-div {
+    background-image: url(https://tse3.mm.bing.net/th?id=OIP.VvvEM-BkbZ8fBVAUZbArjQHaHa&pid=Api&P=0&h=180);
+    background-position: top center;
+  }
+  
+  .side-div {
+    display: block;
+    width: 18rem;
+    height: 400px;
+    box-shadow: 0 0.5rem 0.5rem #0004;
+    color: white;
+  }
+  
+  .logInInput {
+    border: none !important;
+    border-bottom: 2px solid black !important;
+  }
+  
+  @media screen and (max-width: 500px) {
+    .side-div {
+      display: none !important;
+    }
+  }
+
+#submit{
+  background-color: rgb(223, 132, 232);
+  border-color: rgb(223, 132, 232);
+}
