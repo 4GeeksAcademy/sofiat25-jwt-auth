@@ -1,69 +1,48 @@
 import React, { useState, useEffect } from "react";
 import getState from "./flux.js";
-import { useNavigate } from "react-router-dom";
 
-
+// Don't change, here is where we initialize our context, by default it's just going to be null.
 export const Context = React.createContext(null);
 
+// This function injects the global store to any view/component where you want to use it, we will inject the context to layout.js, you can see it here:
+// https://github.com/4GeeksAcademy/react-hello-webapp/blob/master/src/js/layout.js#L35
 const injectContext = PassedComponent => {
-    const StoreWrapper = props => {
-        const [state, setState] = useState(
-            getState({
-                getStore: () => state.store,
-                getActions: () => state.actions,
-                setStore: updatedStore =>
-                    setState({
-                        store: Object.assign(state.store, updatedStore),
-                        actions: { ...state.actions }
-                    })
-            })
-        );
+	const StoreWrapper = props => {
+		//this will be passed as the contenxt value
+		const [state, setState] = useState(
+			getState({
+				getStore: () => state.store,
+				getActions: () => state.actions,
+				setStore: updatedStore =>
+					setState({
+						store: Object.assign(state.store, updatedStore),
+						actions: { ...state.actions }
+					})
+			})
+		);
 
-        const navigate = useNavigate(); // Agrega useNavigate para navegación
+		useEffect(() => {
 
-        useEffect(() => {
-            // Efecto secundario para inicializar el estado o realizar otras acciones si es necesario
-        }, []);
+			/**
+			 * EDIT THIS!
+			 * This function is the equivalent to "window.onLoad", it only runs once on the entire application lifetime
+			 * you should do your ajax requests or fetch api requests here. Do not use setState() to save data in the
+			 * store, instead use actions, like this:
+			 **/
+			/////////////////state.actions.getMessage(); // <---- calling this function from the flux.js actions
+			state.actions.isAuth()
+		}, []);
 
-        const handleSignUp = async (userData) => {
-            try {
-                // Realiza la solicitud POST al backend para registrar un nuevo usuario
-                const response = await fetch(process.env.REACT_ENV_URL + "/user", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(userData),
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log(data);
-                // Lógica adicional después de registrar al usuario, como redirigir a otra página
-                navigate("/Login");
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                // Manejo de errores
-            }
-        };
-
-        // Pasar el estado global y las acciones al contexto
-        const contextValue = {
-            state: state.store,
-            actions: state.actions,
-            handleSignUp: handleSignUp // Agrega handleSignUp al contexto
-        };
-
-        return (
-            <Context.Provider value={contextValue}>
-                <PassedComponent {...props} />
-            </Context.Provider>
-        );
-    };
-    return StoreWrapper;
+		// The initial value for the context is not null anymore, but the current state of this component,
+		// the context will now have a getStore, getActions and setStore functions available, because they were declared
+		// on the state of this component
+		return (
+			<Context.Provider value={state}>
+				<PassedComponent {...props} />
+			</Context.Provider>
+		);
+	};
+	return StoreWrapper;
 };
 
-export default injectContext; // Exporta el componente de orden superior
+export default injectContext;
